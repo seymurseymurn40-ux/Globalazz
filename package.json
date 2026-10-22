@@ -1,0 +1,8 @@
+{
+  "name": "globalaz",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": { "start": "node -e \"require('./'+require('fs').readdirSync('.').filter(f=>/^server\\d*\\.js$/.test(f)).sort().pop())\"" },
+  "dependencies": { "express": "^4.19.2" },
+  "engines": { "node": ">=18" }
+}
