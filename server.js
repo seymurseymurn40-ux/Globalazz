@@ -116,8 +116,9 @@ app.put('/api/admin/products/:id',auth,(q,r)=>{const i=db.products.findIndex(x=>
 app.delete('/api/admin/products/:id',auth,(q,r)=>{db.products=db.products.filter(x=>x.id!==q.params.id);save();r.json({ok:true})});
 app.post('/api/fetch',auth,async(q,r)=>{const link=canon(q.body&&q.body.url);if(!link)return r.status(400).json({error:'Düzgün link daxil edin'});
  let out=null,apiError='';
- try{const p=parseItem(await apiRaw(link));if(p.title)out={...p,link,via:'api'}}catch(e){apiError=e.message}
+ try{const raw=await apiRaw(link);const p=parseItem(raw);if(p.title)out={...p,link,via:'api'};else apiError='API cavabinda mehsul adi tapilmadi: '+s(JSON.stringify(raw),400)}catch(e){apiError=e.message}
  if(out){try{if(out.desc)out.desc=await tr(out.desc)}catch{}out.opts=await trOpts(out.opts);return r.json(out)}
+ if(apiError)return r.json({link,title:'',img:'',cny:0,blocked:true,via:'page',apiError});
  try{r.json({...await lookup(link),via:'page',apiError})}catch(e){r.json({link,title:'',img:'',cny:0,blocked:true,via:'page',apiError})}});
 app.post('/api/admin/taobao-test',auth,async(q,r)=>{const link=canon(q.body&&q.body.url);if(!link)return r.status(400).json({error:'Düzgün link daxil edin'});
  const o={configured:!!(RK&&RP),host:RH,id:itemId(link)};
